@@ -3,9 +3,10 @@ from typing import List
 import pandas
 import nltk
 from nltk import WordNetLemmatizer
+from nltk.corpus import stopwords
 
 
-class TextPreproccessor:
+class TextPreprocessor:
 
     df: pandas.DataFrame
 
@@ -21,9 +22,11 @@ class TextPreproccessor:
 
         return tokenized_words, sentences
 
-    def __stop_words(self, words: List[str]) -> List[str]:
-        stop_words = set(nltk.corpus.stopwords("english"))
-        without_stopwords = [word for word in words if word not in stop_words]
+    def __stop_words(self, words):
+        words = words.split()
+        nltk.download('stopwords')
+        stop_words = set(stopwords.words("english"))
+        without_stopwords = " ".join([word for word in words if word not in stop_words])
         return without_stopwords
 
     def __lemmatize(self, words: List[str]) -> List[str]:
@@ -34,6 +37,7 @@ class TextPreproccessor:
 
         return lemmatized_words
 
-    def __prepare_dataframe(self):
-        self.df["Resume"] = self.df["Resume"].apply(self.__tokenize).apply(self.__stop_words).apply(self.__lemmatize)
+    def prepare_dataframe(self):
+        self.df["resume_text"] = self.df["resume_text"].apply(self.__stop_words)
+        self.df["job_description_text"] = self.df["job_description_text"].apply(self.__stop_words)
         return self.df

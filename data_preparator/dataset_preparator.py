@@ -1,21 +1,20 @@
 import re
 import string
-
 import pandas as pd
 
 class DataPreparator:
 
     df: pd.DataFrame
 
-    def __init__(self, data_path: str):
-        self.df = pd.read_csv(data_path)
+    def __init__(self, df: pd.DataFrame):
+        self.df = df
 
-    def __preprocess(self):
-        self.df["Resume"] = self.df["Resume"].apply(lambda x: self.__clean_text(x))
+    def preprocess(self):
+        self.df["resume_text"] = self.df["resume_text"].apply(lambda x: self.__clean_text(x))
+        self.df["job_description_text"] = self.df["job_description_text"].apply(lambda x: self.__clean_text(x))
         return self.df
 
     def __clean_text(self, text: str) -> str:
-
         text = re.sub(r'http\S+', ' ', text)
         text = re.sub(r'@\S+', ' ', text)
         text = re.sub(r'RT|cc', ' ', text)
