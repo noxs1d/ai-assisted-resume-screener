@@ -34,20 +34,18 @@ class DataBase:
         if isinstance(datas, list):
             if len(datas[0]) > 1:
                 s = (len(datas[0]) - 1) * "%s, " + "%s"
-            query = f"INSERT INTO {attributes} VALUES (s)"
+            query = f"INSERT INTO {table_name} ({attributes}) VALUES (s)"
             self.mycursor.executemany(query, datas)
         else:
-            self.myscursor.execute(f"INSERT INTO {attributes} VALUES ({datas})")
+            datas = ", ".join([f"'{data}'" for data in datas.split(", ")])
+            print(f"INSERT INTO {table_name} ({attributes}) VALUES ({datas})")
+            self.mycursor.execute(f"INSERT INTO {table_name} ({attributes}) VALUES ({datas})")
+
+        self.mydb.commit()
+
 
 if __name__ == "__main__":
     print(os.getenv('DB_HOST'))
     db = DataBase()
     db.connect_db("resumeai")
-    db.create_table("Candidates", """
-    CandidateID INT(6) NOT NULL AUTO_INCREMENT,
-    Name VARCHAR(255), 
-    LastName VARCHAR(255),
-    Positon VARCHAR(255),
-    Rate INT(2),
-    PRIMARY KEY(CandidateID)
-    """)
+    db.insert_data("candidates",  "1, Nurik, Urazbaev, ML-engineer, 7", "CandidateID, name, lastname, positon, rate")
